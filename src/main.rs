@@ -7,7 +7,7 @@ mod joman;
 fn cli() -> Command {
     clap::Command::new("joman")
         .about("A journal management system CLI")
-        .version("0.2")
+        .version("0.3")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .subcommand(
@@ -47,7 +47,16 @@ fn cli() -> Command {
                     Arg::new("pem")
                         .required(true)
                         .help("the private key of the file")
-                        .value_name("PEMF"),
+                        .value_name("PEM"),
+                ),
+        )
+        .subcommand(
+            Command::new("new")
+                .about("creates a new journal entry")
+                .arg(
+                    Arg::new("title")
+                        .help("Title of the journal entry")
+                        .value_name("TITLE"),
                 ),
         )
 }
@@ -90,6 +99,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             let content = joman::read_file(file_path, key)?;
             println!("{}", content);
+        }
+        Some(("new", sub_matches)) => {
+            let title = sub_matches.get_one::<String>("title").map(|s| s.as_str());
+
+            joman::new_file(title)?;
         }
         _ => unreachable!(),
     }
