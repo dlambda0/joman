@@ -1,13 +1,12 @@
 use clap::{Arg, Command};
 use std::error::Error;
 
-mod encryption;
 mod joman;
 
 fn cli() -> Command {
     clap::Command::new("joman")
         .about("A journal management system CLI")
-        .version("0.3")
+        .version("0.3.5")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .subcommand(
@@ -59,6 +58,10 @@ fn cli() -> Command {
                         .value_name("TITLE"),
                 ),
         )
+        .subcommand(
+            Command::new("zip")
+                .about("creates a zip archive of the journal directory"),
+        )
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -103,7 +106,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some(("new", sub_matches)) => {
             let title = sub_matches.get_one::<String>("title").map(|s| s.as_str());
 
-            joman::new_file(title)?;
+            joman::file_creation::new_file(title)?;
+        }
+        Some(("zip", _sub_matches)) => {
+            joman::zip_file()?;
+            println!("Journal directory zipped to Journal.zip");
         }
         _ => unreachable!(),
     }
