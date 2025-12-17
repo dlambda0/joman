@@ -3,7 +3,7 @@ use std::fs;
 use std::path::Path;
 use std::process::Command;
 
-use crate::joman::encryption::hyb_encrypt;
+use super::encryption::hyb_encrypt;
 
 pub fn new_file(title: Option<&str>) -> Result<(), Box<dyn Error>> {
     if !Path::new("Journal").exists() {
@@ -47,6 +47,10 @@ pub fn new_file(title: Option<&str>) -> Result<(), Box<dyn Error>> {
         .map_err(|e| format!("Failed to encrypt journal entry: {}", e))?;
 
     let dest_path = format!("Journal/{}", filename);
+    if Path::new(&dest_path).exists() {
+        let _ = fs::remove_file(&tmp_path);
+        return Err(format!("A journal entry with the name '{}' already exists.", filename).into());
+    }
 
     fs::write(&dest_path, &ciphertext)
         .map_err(|e| format!("Failed to write journal entry: {}", e))?;
@@ -65,23 +69,29 @@ fn generate_next_entry_name() -> Result<String, Box<dyn Error>> {
         let entry = entry.map_err(|e| format!("Failed to get directory entry: {}", e))?;
         let path = entry.path();
 
-        if path.is_file() {
-            if let Some(file_name) = path.file_name().and_then(|n| n.to_str()) {
-                if file_name.ends_with(".enc") {
-                    if let Some(index_str) = file_name
-                        .strip_prefix("entry_")
-                        .and_then(|s| s.strip_suffix(".enc"))
-                    {
-                        if let Ok(index) = index_str.parse::<u32>() {
-                            if index > max_index {
-                                max_index = index;
-                            }
-                        }
-                    }
-                }
-            }
+        if !path.is_file() {
+            continue;
+        }
+
+        let Some(filename) = path.file_name().and_then(|n| n.to_str()) else {
+            continue;
+        };
+
+        if !filename.starts_with("Log_") || !filename.ends_with(".md.enc") {
+            continue;
+        }
+
+        let Some(index_str) = filename
+            .strip_prefix("Log_")
+            .and_then(|s| s.strip_suffix(".md.enc"))
+        else {
+            continue;
+        };
+
+        if let Ok(index) = index_str.parse::<u32>() {
+            max_index = max_index.max(index);
         }
     }
 
-    Ok(format!("entry_{}.enc", max_index + 1))
+    Ok(format!("Log_{}.md.enc", max_index + 1))
 }

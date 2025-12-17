@@ -6,7 +6,7 @@ mod joman;
 fn cli() -> Command {
     clap::Command::new("joman")
         .about("A journal management system CLI")
-        .version("0.3.5")
+        .version("0.3.7")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .subcommand(
