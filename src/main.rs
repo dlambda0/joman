@@ -58,10 +58,7 @@ fn cli() -> Command {
                         .value_name("TITLE"),
                 ),
         )
-        .subcommand(
-            Command::new("zip")
-                .about("creates a zip archive of the journal directory"),
-        )
+        .subcommand(Command::new("zip").about("creates a zip archive of the journal directory"))
 }
 
 fn main() -> Result<(), Box<dyn Error>> {

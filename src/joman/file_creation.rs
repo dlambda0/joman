@@ -49,7 +49,11 @@ pub fn new_file(title: Option<&str>) -> Result<(), Box<dyn Error>> {
     let dest_path = format!("Journal/{}", filename);
     if Path::new(&dest_path).exists() {
         let _ = fs::remove_file(&tmp_path);
-        return Err(format!("A journal entry with the name '{}' already exists.", filename).into());
+        return Err(format!(
+            "A journal entry with the name '{}' already exists.",
+            filename
+        )
+        .into());
     }
 
     fs::write(&dest_path, &ciphertext)

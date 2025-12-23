@@ -6,7 +6,6 @@ use std::process::Command;
 pub mod encryption;
 pub mod file_creation;
 
-
 pub fn initialize() -> Result<(), Box<dyn Error>> {
     if Path::new("Journal").exists() {
         println!("Journal already initialized in this directory.");
@@ -16,8 +15,8 @@ pub fn initialize() -> Result<(), Box<dyn Error>> {
     fs::create_dir_all("Journal")
         .map_err(|e| format!("Failed to create journal directory: {}", e))?;
 
-    let (priv_key, pub_key) =
-        encryption::rsa_gen_keypair().map_err(|e| format!("Failed to generate RSA keypair: {}", e))?;
+    let (priv_key, pub_key) = encryption::rsa_gen_keypair()
+        .map_err(|e| format!("Failed to generate RSA keypair: {}", e))?;
 
     let pub_key_path = format!("Journal/public.pem");
     let priv_key_path = format!("./private.pem");
@@ -41,8 +40,8 @@ pub fn add_file(file_path: &str) -> Result<(), Box<dyn Error>> {
     let pub_key = fs::read_to_string("Journal/public.pem")
         .map_err(|e| format!("Failed to read file: {}", e))?;
 
-    let ciphertext =
-        encryption::hyb_encrypt(&plaintext, &pub_key).map_err(|e| format!("failed to encrypt: {}", e))?;
+    let ciphertext = encryption::hyb_encrypt(&plaintext, &pub_key)
+        .map_err(|e| format!("failed to encrypt: {}", e))?;
 
     let encrypted_file = format!(
         "Journal/{}.enc",
