@@ -3,6 +3,8 @@ use std::fs;
 use std::path::Path;
 use std::process::Command;
 
+use chrono::Local;
+
 use super::encryption::hyb_encrypt;
 
 pub fn new_file(title: Option<&str>) -> Result<(), Box<dyn Error>> {
@@ -13,7 +15,13 @@ pub fn new_file(title: Option<&str>) -> Result<(), Box<dyn Error>> {
     let tmp_dir = std::env::temp_dir();
     let tmp_path = tmp_dir.join(format!("joman_{}.tmp", std::process::id()));
 
-    fs::write(&tmp_path, "").map_err(|e| format!("Failed to create temporary file: {}", e))?;
+    let now = Local::now();
+
+    let time = now.format("%I:%M %p").to_string();
+    let date = now.format("%B %-d, %Y").to_string();
+
+    let header = format!("{}\n{}\n", time, date);
+    fs::write(&tmp_path, header).map_err(|e| format!("Failed to create temporary file: {}", e))?;
 
     // Sorry losers, I use vim
     let editor = Command::new("vim")

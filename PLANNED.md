@@ -1,6 +1,6 @@
 # To be added
 
-## Commands:
+## Commands
 
 - [ ] migrate -- updates the current directory to be compliant with newer features to improve scalability
 - [ ] display -- Shows all the entries in a ranger like menu and allows for easy selection
