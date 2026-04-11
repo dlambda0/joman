@@ -13,6 +13,7 @@
 
 - [ ] rearrage the codebase in a more rust compliant way
 - [ ] a more comprehensive clap
+- [ ] Add tests
 - [ ] error checking to ensure no files are overwritten or deleted
 
 ## Ideas
